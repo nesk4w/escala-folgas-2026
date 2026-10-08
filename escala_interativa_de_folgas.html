@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escala Interativa de Folgas - Setembro & Outubro 2026</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        emerald: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .print-full-width { width: 100% !important; max-width: none !important; }
+        }
+    </style>
+</head>
+<body class="h-full text-slate-800 flex flex-col antialiased">
+
+    <script>
+        // Global Data Structures
+        const EMPLOYEES = [
+            { id: 0, name: "ANTONIO DIOGO OLIVEIRA DA COSTA", shortName: "Antonio Diogo" },
+            { id: 1, name: "THIAGO AROUCHE RABELO", shortName: "Thiago Arouche" },
+            { id: 2, name: "DAVID ANDRIUS SOUZA CARNEIRO", shortName: "David Andrius" },
+            { id: 3, name: "FRANCISCO RONALDO DA SILVA ROCHA", shortName: "Francisco Ronaldo" },
+            { id: 4, name: "HAMILTON DE ARAUJO SILVA FILHO", shortName: "Hamilton Silva" },
+            { id: 5, name: "PEDRO ALFERES PINHEIRO MULATO", shortName: "Pedro Alferes" },
+            { id: 6, name: "TARCIANO DEYVID SANCHO DUARTE", shortName: "Tarciano Deyvid" },
+            { id: 7, name: "WELLINGTON MESQUITA DA SILVA", shortName: "Wellington Mesquita" }
+        ];
+
+        const SCHEDULE_DATES = [
+            { id: 0, date: "28/09/2026", dayName: "Segunda-feira", month: "setembro", year: 2026, iso: "2026-09-28", dayNum: 28 },
+            { id: 1, date: "29/09/2026", dayName: "Terça-feira", month: "setembro", year: 2026, iso: "2026-09-29", dayNum: 29 },
+            { id: 2, date: "30/09/2026", dayName: "Quarta-feira", month: "setembro", year: 2026, iso: "2026-09-30", dayNum: 30 },
+            { id: 3, date: "05/10/2026", dayName: "Segunda-feira", month: "outubro", year: 2026, iso: "2026-10-05", dayNum: 5 },
+            { id: 4, date: "06/10/2026", dayName: "Terça-feira", month: "outubro", year: 2026, iso: "2026-10-06", dayNum: 6 },
+            { id: 5, date: "07/10/2026", dayName: "Quarta-feira", month: "outubro", year: 2026, iso: "2026-10-07", dayNum: 7 },
+            { id: 6, date: "19/10/2026", dayName: "Segunda-feira", month: "outubro", year: 2026, iso: "2026-10-19", dayNum: 19 },
+            { id: 7, date: "20/10/2026", dayName: "Terça-feira", month: "outubro", year: 2026, iso: "2026-10-20", dayNum: 20 },
+            { id: 8, date: "21/10/2026", dayName: "Quarta-feira", month: "outubro", year: 2026, iso: "2026-10-21", dayNum: 21 },
+            { id: 9, date: "26/10/2026", dayName: "Segunda-feira", month: "outubro", year: 2026, iso: "2026-10-26", dayNum: 26 },
+            { id: 10, date: "27/10/2026", dayName: "Terça-feira", month: "outubro", year: 2026, iso: "2026-10-27", dayNum: 27 },
+            { id: 11, date: "28/10/2026", dayName: "Quarta-feira", month: "outubro", year: 2026, iso: "2026-10-28", dayNum: 28 }
+        ];
+
+        // Off Matrix: Matrix[empId][dateId] -> true if off
+        const OFF_MATRIX = [
+            [true,  false, false, true,  false, false, true,  false, false, true,  false, false], // 0: Antonio
+            [true,  false, false, true,  false, false, true,  false, false, true,  false, false], // 1: Thiago
+            [true,  false, false, true,  false, false, true,  false, false, true,  false, false], // 2: David
+            [false, true,  false, false, true,  false, false, true,  false, true,  false, false], // 3: Francisco
+            [false, true,  false, false, true,  false, false, true,  false, true,  false, false], // 4: Hamilton
+            [false, true,  false, true,  false, false, false, true,  false, false, true,  false], // 5: Pedro
+            [false, false, true,  true,  false, false, false, false, true,  false, true,  false], // 6: Tarciano
+            [false, false, true,  true,  false, false, false, false, true,  true,  false, false]  // 7: Wellington
+        ];
+
+        // State variables
+        let currentTab = 'cards';
+        let selectedEmployeeFilter = 'ALL';
+        let searchQuery = '';
+
+        // Safe global function declaration to prevent ReferenceError
+        window.switchTab = function(tabName) {
+            currentTab = tabName;
+            
+            // Update tab button styles
+            const tabs = ['cards', 'matrix', 'calendar', 'team'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (!btn) return;
+                if (t === tabName) {
+                    btn.className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all bg-emerald-600 text-white shadow-sm";
+                } else {
+                    btn.className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all text-slate-600 hover:bg-slate-100 hover:text-slate-900";
+                }
+            });
+
+            // Toggle view visibility
+            tabs.forEach(t => {
+                const view = document.getElementById(`view-${t}`);
+                if (!view) return;
+                if (t === tabName) {
+                    view.classList.remove('hidden');
+                } else {
+                    view.classList.add('hidden');
+                }
+            });
+        };
+
+        window.filterByEmployee = function(empId) {
+            selectedEmployeeFilter = empId;
+            renderAllViews();
+        };
+
+        window.updateSearch = function(query) {
+            searchQuery = query.toLowerCase().trim();
+            renderAllViews();
+        };
+
+        window.clearFilters = function() {
+            selectedEmployeeFilter = 'ALL';
+            searchQuery = '';
+            document.getElementById('search-input').value = '';
+            document.getElementById('employee-select').value = 'ALL';
+            renderAllViews();
+        };
+    </script>
+
+    <header class="bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-900 text-white shadow-md sticky top-0 z-30 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2.5 bg-white/10 backdrop-blur rounded-xl border border-white/20">
+                        <i class="fa-solid fa-calendar-check text-2xl text-emerald-300"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold tracking-tight">Escala Interativa de Folgas</h1>
+                        <p class="text-xs sm:text-sm text-emerald-200/90 font-medium">Setembro & Outubro de 2026</p>
+                    </div>
+                </div>
+
+                <!-- Global Stats Badges -->
+                <div class="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+                    <div class="bg-white/10 backdrop-blur px-3 py-1.5 rounded-lg border border-white/10 text-center">
+                        <span class="block text-emerald-200 text-[10px] uppercase tracking-wider font-semibold">Equipe</span>
+                        <span class="font-bold text-sm sm:text-base">8 Pessoas</span>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur px-3 py-1.5 rounded-lg border border-white/10 text-center">
+                        <span class="block text-emerald-200 text-[10px] uppercase tracking-wider font-semibold">Dias Escala</span>
+                        <span class="font-bold text-sm sm:text-base">12 Dias</span>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur px-3 py-1.5 rounded-lg border border-white/10 text-center">
+                        <span class="block text-emerald-200 text-[10px] uppercase tracking-wider font-semibold">Total Folgas</span>
+                        <span class="font-bold text-sm sm:text-base text-emerald-300">32 Folgas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="bg-white border-b border-slate-200 shadow-sm sticky top-[73px] z-20 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                
+                <!-- Navigation Tabs -->
+                <div class="flex items-center space-x-1 overflow-x-auto pb-1 lg:pb-0 custom-scrollbar">
+                    <button id="tab-cards" onclick="switchTab('cards')" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all bg-emerald-600 text-white shadow-sm">
+                        <i class="fa-solid fa-layer-group"></i> Cards Diários
+                    </button>
+                    <button id="tab-matrix" onclick="switchTab('matrix')" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all text-slate-600 hover:bg-slate-100">
+                        <i class="fa-solid fa-table-cells"></i> Matriz Tabela
+                    </button>
+                    <button id="tab-calendar" onclick="switchTab('calendar')" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all text-slate-600 hover:bg-slate-100">
+                        <i class="fa-regular fa-calendar-days"></i> Visão Mensal
+                    </button>
+                    <button id="tab-team" onclick="switchTab('team')" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all text-slate-600 hover:bg-slate-100">
+                        <i class="fa-solid fa-users"></i> Por Colaborador
+                    </button>
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <!-- Search Input -->
+                    <div class="relative flex-1 sm:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input id="search-input" type="text" oninput="updateSearch(this.value)" placeholder="Buscar colaborador..." class="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all">
+                    </div>
+
+                    <!-- Employee Select Dropdown -->
+                    <select id="employee-select" onchange="filterByEmployee(this.value)" class="py-1.5 px-3 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium">
+                        <option value="ALL">Todos os Colaboradores</option>
+                    </select>
+
+                    <!-- Reset & Print Buttons -->
+                    <button onclick="clearFilters()" title="Limpar Filtros" class="p-2 text-slate-500 hover:text-emerald-700 hover:bg-slate-100 rounded-lg transition-all text-xs border border-slate-200">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                    <button onclick="window.print()" title="Imprimir / Salvar PDF" class="px-3 py-1.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg border border-slate-300 flex items-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-print"></i> <span class="hidden sm:inline">Imprimir</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- VIEW 1: CARDS VIEW (Daily Timeline Cards) -->
+        <section id="view-cards" class="space-y-6">
+            <div class="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-circle-info text-emerald-600 text-lg"></i>
+                    <p class="text-xs sm:text-sm text-emerald-900 font-medium">
+                        Exibindo os dias de escala com a lista de colaboradores em folga programada.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Grid of Cards -->
+            <div id="cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <!-- JS will inject dynamic cards here -->
+            </div>
+        </section>
+
+        <section id="view-matrix" class="hidden space-y-4">
+            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                <div class="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                        <h2 class="font-bold text-slate-800 text-sm sm:text-base">Matriz Geral de Folgas</h2>
+                        <p class="text-xs text-slate-500">Visualização completa no formato de planilha</p>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs">
+                        <span class="inline-flex items-center gap-1 text-emerald-700 font-semibold bg-emerald-100 px-2.5 py-1 rounded-md border border-emerald-200">
+                            <i class="fa-solid fa-check"></i> X = Folga
+                        </span>
+                        <span class="inline-flex items-center gap-1 text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">
+                            Vazio = Trabalho
+                        </span>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                                <th class="p-3 font-semibold min-w-[220px] sticky left-0 bg-slate-100 z-10 border-r border-slate-200">
+                                    Nome do Colaborador
+                                </th>
+                                <!-- Dynamic Date Headers inserted by JS -->
+                                <th id="matrix-date-headers-placeholder"></th>
+                                <th class="p-3 font-semibold text-center bg-slate-200/60 min-w-[80px]">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matrix-tbody" class="divide-y divide-slate-200 bg-white">
+                            <!-- Dynamic Matrix Rows inserted by JS -->
+                        </tbody>
+                        <tfoot id="matrix-tfoot" class="bg-slate-100 border-t-2 border-slate-300 font-semibold">
+                            <!-- Dynamic Matrix Column Totals -->
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-calendar" class="hidden space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- September 2026 Calendar -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-regular fa-calendar text-emerald-600 text-lg"></i>
+                            <h2 class="font-bold text-lg text-slate-800">Setembro 2026</h2>
+                        </div>
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full">
+                            3 Dias com Folgas
+                        </span>
+                    </div>
+
+                    <!-- Calendar Grid Header -->
+                    <div class="grid grid-cols-7 gap-1 text-center font-semibold text-slate-500 text-xs py-1">
+                        <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+                    </div>
+
+                    <!-- Calendar Days Grid -->
+                    <div id="september-calendar-grid" class="grid grid-cols-7 gap-1 text-xs">
+                        <!-- JS renders calendar cells -->
+                    </div>
+                </div>
+
+                <!-- October 2026 Calendar -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-regular fa-calendar text-emerald-600 text-lg"></i>
+                            <h2 class="font-bold text-lg text-slate-800">Outubro 2026</h2>
+                        </div>
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full">
+                            9 Dias com Folgas
+                        </span>
+                    </div>
+
+                    <!-- Calendar Grid Header -->
+                    <div class="grid grid-cols-7 gap-1 text-center font-semibold text-slate-500 text-xs py-1">
+                        <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+                    </div>
+
+                    <!-- Calendar Days Grid -->
+                    <div id="october-calendar-grid" class="grid grid-cols-7 gap-1 text-xs">
+                        <!-- JS renders calendar cells -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="view-team" class="hidden space-y-6">
+            <div id="team-cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Dynamic Employee Cards inserted by JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <div id="day-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
+            <div class="bg-emerald-700 text-white p-4 flex items-center justify-between">
+                <div>
+                    <h3 id="modal-date-title" class="font-bold text-lg">Data</h3>
+                    <p id="modal-date-subtitle" class="text-xs text-emerald-100 font-medium">Dia da semana</p>
+                </div>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div class="text-xs font-semibold uppercase text-slate-400 tracking-wider">
+                    Colaboradores de Folga neste dia:
+                </div>
+                <div id="modal-employee-list" class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
+                    <!-- Dynamic list -->
+                </div>
+            </div>
+            <div class="bg-slate-50 p-4 border-t border-slate-200 text-right">
+                <button onclick="closeModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-lg text-xs transition-all">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal functions
+        window.openModal = function(dateIndex) {
+            const dateObj = SCHEDULE_DATES[dateIndex];
+            if (!dateObj) return;
+
+            document.getElementById('modal-date-title').innerText = dateObj.date;
+            document.getElementById('modal-date-subtitle').innerText = dateObj.dayName;
+
+            const modalList = document.getElementById('modal-employee-list');
+            modalList.innerHTML = '';
+
+            const offEmps = EMPLOYEES.filter(e => OFF_MATRIX[e.id][dateIndex]);
+
+            if (offEmps.length === 0) {
+                modalList.innerHTML = `
+                    <div class="p-4 bg-slate-100 text-slate-500 rounded-lg text-center text-xs font-medium">
+                        Nenhuma folga programada para este dia.
+                    </div>
+                `;
+            } else {
+                offEmps.forEach(emp => {
+                    const div = document.createElement('div');
+                    div.className = "flex items-center gap-3 p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-slate-800 text-xs sm:text-sm font-semibold";
+                    div.innerHTML = `
+                        <div class="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">
+                            ${emp.name.charAt(0)}
+                        </div>
+                        <span>${emp.name}</span>
+                    `;
+                    modalList.appendChild(div);
+                });
+            }
+
+            document.getElementById('day-modal').classList.remove('hidden');
+        };
+
+        window.closeModal = function() {
+            document.getElementById('day-modal').classList.add('hidden');
+        };
+
+        // Populate Select Dropdown
+        function initEmployeeSelect() {
+            const select = document.getElementById('employee-select');
+            select.innerHTML = '<option value="ALL">Todos os Colaboradores</option>';
+            EMPLOYEES.forEach(emp => {
+                const opt = document.createElement('option');
+                opt.value = emp.id;
+                opt.textContent = emp.shortName;
+                select.appendChild(opt);
+            });
+        }
+
+        // Render View 1: Cards View
+        function renderCardsView() {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = '';
+
+            SCHEDULE_DATES.forEach((d, dateIdx) => {
+                // Filter logic
+                const offEmps = EMPLOYEES.filter(emp => OFF_MATRIX[emp.id][dateIdx]);
+                
+                // Check if matches filter/search
+                if (selectedEmployeeFilter !== 'ALL') {
+                    const isEmpOff = OFF_MATRIX[parseInt(selectedEmployeeFilter)][dateIdx];
+                    if (!isEmpOff) return;
+                }
+
+                if (searchQuery) {
+                    const matchesSearch = offEmps.some(e => e.name.toLowerCase().includes(searchQuery) || e.shortName.toLowerCase().includes(searchQuery));
+                    if (!matchesSearch) return;
+                }
+
+                const card = document.createElement('div');
+                card.className = "bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col";
+                
+                const hasOffs = offEmps.length > 0;
+                const headerBg = hasOffs ? 'bg-emerald-700 text-white' : 'bg-slate-100 text-slate-600';
+
+                let empsHTML = '';
+                if (hasOffs) {
+                    empsHTML = offEmps.map(emp => {
+                        const isSelected = selectedEmployeeFilter !== 'ALL' && parseInt(selectedEmployeeFilter) === emp.id;
+                        return `
+                            <div class="flex items-center gap-2 p-2 rounded-lg text-xs font-semibold ${isSelected ? 'bg-emerald-100 text-emerald-900 border border-emerald-300' : 'bg-slate-50 text-slate-700 border border-slate-200'}">
+                                <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+                                    ${emp.shortName.charAt(0)}
+                                </span>
+                                <span class="truncate">${emp.shortName}</span>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    empsHTML = `
+                        <div class="text-center py-6 text-slate-400 text-xs italic font-medium">
+                            (Sem folgas programadas)
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="${headerBg} p-3.5 flex items-center justify-between border-b border-black/5">
+                        <div>
+                            <span class="text-xs opacity-80 uppercase tracking-wider font-semibold block">${d.dayName}</span>
+                            <span class="font-bold text-base sm:text-lg">${d.date}</span>
+                        </div>
+                        <span class="text-xs px-2.5 py-1 rounded-full font-bold ${hasOffs ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-600'}">
+                            ${offEmps.length} ${offEmps.length === 1 ? 'folga' : 'folgas'}
+                        </span>
+                    </div>
+                    <div class="p-3 flex-1 space-y-2">
+                        ${empsHTML}
+                    </div>
+                    <div class="p-2.5 bg-slate-50 border-t border-slate-100 text-center">
+                        <button onclick="openModal(${dateIdx})" class="text-xs font-semibold text-emerald-700 hover:text-emerald-900 transition-colors">
+                            Ver detalhes <i class="fa-solid fa-chevron-right text-[10px] ml-0.5"></i>
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            if (container.children.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full bg-white p-8 rounded-xl text-center text-slate-500 border border-slate-200">
+                        <i class="fa-solid fa-filter-circle-xmark text-3xl mb-2 text-slate-300"></i>
+                        <p class="font-semibold text-sm">Nenhuma folga encontrada para os filtros selecionados.</p>
+                        <button onclick="clearFilters()" class="mt-3 text-xs text-emerald-600 font-semibold hover:underline">Limpar Filtros</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderMatrixView() {
+            const dateHeadersPlaceholder = document.getElementById('matrix-date-headers-placeholder');
+            const tbody = document.getElementById('matrix-tbody');
+            const tfoot = document.getElementById('matrix-tfoot');
+
+            // Generate Date Headers
+            let headersHTML = '';
+            SCHEDULE_DATES.forEach(d => {
+                headersHTML += `
+                    <th class="p-2.5 text-center font-semibold min-w-[90px] border-r border-slate-200 bg-slate-100">
+                        <div class="text-[11px] font-medium text-slate-500">${d.dayName.split('-')[0]}</div>
+                        <div class="text-xs font-bold text-slate-800">${d.date.substring(0, 5)}</div>
+                    </th>
+                `;
+            });
+            dateHeadersPlaceholder.outerHTML = headersHTML;
+
+            // Generate Employee Rows
+            tbody.innerHTML = '';
+            EMPLOYEES.forEach(emp => {
+                // Search filter
+                if (searchQuery && !emp.name.toLowerCase().includes(searchQuery) && !emp.shortName.toLowerCase().includes(searchQuery)) {
+                    return;
+                }
+                if (selectedEmployeeFilter !== 'ALL' && parseInt(selectedEmployeeFilter) !== emp.id) {
+                    return;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition-colors";
+
+                let rowCount = 0;
+                let cellsHTML = `
+                    <td class="p-3 font-semibold text-slate-800 sticky left-0 bg-white border-r border-slate-200 shadow-sm">
+                        ${emp.name}
+                    </td>
+                `;
+
+                SCHEDULE_DATES.forEach((d, dateIdx) => {
+                    const isOff = OFF_MATRIX[emp.id][dateIdx];
+                    if (isOff) rowCount++;
+
+                    cellsHTML += `
+                        <td class="p-2 text-center border-r border-slate-100 ${isOff ? 'bg-emerald-50' : ''}">
+                            ${isOff ? `
+                                <span class="inline-flex items-center justify-center w-6 h-6 rounded bg-emerald-600 text-white font-bold text-xs shadow-sm">
+                                    X
+                                </span>
+                            ` : '<span class="text-slate-300 text-xs">-</span>'}
+                        </td>
+                    `;
+                });
+
+                cellsHTML += `
+                    <td class="p-3 text-center font-bold text-emerald-800 bg-emerald-50/50">
+                        ${rowCount}
+                    </td>
+                `;
+
+                tr.innerHTML = cellsHTML;
+                tbody.appendChild(tr);
+            });
+
+            // Column Totals in Footer
+            let footerHTML = `
+                <tr>
+                    <td class="p-3 sticky left-0 bg-slate-100 border-r border-slate-200 font-bold text-slate-700">
+                        Total de Folgas
+                    </td>
+            `;
+
+            let grandTotal = 0;
+            SCHEDULE_DATES.forEach((d, dateIdx) => {
+                let colTotal = 0;
+                EMPLOYEES.forEach(emp => {
+                    if (OFF_MATRIX[emp.id][dateIdx]) colTotal++;
+                });
+                grandTotal += colTotal;
+
+                footerHTML += `
+                    <td class="p-2.5 text-center border-r border-slate-200 font-bold text-emerald-800">
+                        ${colTotal}
+                    </td>
+                `;
+            });
+
+            footerHTML += `
+                <td class="p-3 text-center font-extrabold text-emerald-900 bg-emerald-200/60">
+                    ${grandTotal}
+                </td>
+            </tr>
+            `;
+
+            tfoot.innerHTML = footerHTML;
+        }
+
+        function renderCalendarView() {
+            // September 2026 Grid (Starts on Tuesday = index 2)
+            const septGrid = document.getElementById('september-calendar-grid');
+            septGrid.innerHTML = '';
+
+            // Blank padding for Sun, Mon
+            septGrid.appendChild(createBlankCell());
+            septGrid.appendChild(createBlankCell());
+
+            for (let day = 1; day <= 30; day++) {
+                const dateStr = `${day < 10 ? '0' + day : day}/09/2026`;
+                const dateIdx = SCHEDULE_DATES.findIndex(d => d.date === dateStr);
+                septGrid.appendChild(createCalendarCell(day, dateIdx));
+            }
+
+            // October 2026 Grid (Starts on Thursday = index 4)
+            const octGrid = document.getElementById('october-calendar-grid');
+            octGrid.innerHTML = '';
+
+            octGrid.appendChild(createBlankCell());
+            octGrid.appendChild(createBlankCell());
+            octGrid.appendChild(createBlankCell());
+            octGrid.appendChild(createBlankCell());
+
+            for (let day = 1; day <= 31; day++) {
+                const dateStr = `${day < 10 ? '0' + day : day}/10/2026`;
+                const dateIdx = SCHEDULE_DATES.findIndex(d => d.date === dateStr);
+                octGrid.appendChild(createCalendarCell(day, dateIdx));
+            }
+        }
+
+        function createBlankCell() {
+            const div = document.createElement('div');
+            div.className = "h-16 bg-slate-50/50 rounded-lg border border-slate-100";
+            return div;
+        }
+
+        function createCalendarCell(day, dateIdx) {
+            const cell = document.createElement('div');
+            const hasSchedule = dateIdx !== -1;
+
+            if (!hasSchedule) {
+                cell.className = "h-16 p-1.5 bg-white rounded-lg border border-slate-100 flex flex-col justify-between text-slate-400";
+                cell.innerHTML = `<span class="font-medium text-xs">${day}</span>`;
+            } else {
+                const offEmps = EMPLOYEES.filter(e => OFF_MATRIX[e.id][dateIdx]);
+                const count = offEmps.length;
+
+                cell.className = "h-16 p-1.5 bg-emerald-50 rounded-lg border-2 border-emerald-400 flex flex-col justify-between cursor-pointer hover:bg-emerald-100 transition-all shadow-sm";
+                cell.onclick = () => openModal(dateIdx);
+
+                cell.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-xs text-emerald-900">${day}</span>
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    </div>
+                    <div class="text-[10px] font-bold text-emerald-800 bg-emerald-200/70 px-1.5 py-0.5 rounded text-center truncate">
+                        ${count} ${count === 1 ? 'folga' : 'folgas'}
+                    </div>
+                `;
+            }
+
+            return cell;
+        }
+
+        function renderTeamView() {
+            const container = document.getElementById('team-cards-container');
+            container.innerHTML = '';
+
+            EMPLOYEES.forEach(emp => {
+                if (searchQuery && !emp.name.toLowerCase().includes(searchQuery) && !emp.shortName.toLowerCase().includes(searchQuery)) {
+                    return;
+                }
+                if (selectedEmployeeFilter !== 'ALL' && parseInt(selectedEmployeeFilter) !== emp.id) {
+                    return;
+                }
+
+                // Get dates off
+                const offDates = [];
+                SCHEDULE_DATES.forEach((d, dateIdx) => {
+                    if (OFF_MATRIX[emp.id][dateIdx]) {
+                        offDates.push(d);
+                    }
+                });
+
+                const card = document.createElement('div');
+                card.className = "bg-white border border-slate-200 rounded-xl p-4 shadow-sm space-y-3 flex flex-col justify-between hover:border-emerald-400 transition-all";
+
+                const datesList = offDates.map(d => `
+                    <div class="flex items-center justify-between p-2 bg-emerald-50 border border-emerald-200 rounded-lg text-xs font-semibold text-emerald-900">
+                        <span>${d.date}</span>
+                        <span class="text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded font-bold">${d.dayName.split('-')[0]}</span>
+                    </div>
+                `).join('');
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center gap-3 pb-3 border-b border-slate-200">
+                            <div class="w-10 h-10 rounded-full bg-emerald-700 text-white font-bold text-sm flex items-center justify-center shrink-0 shadow">
+                                ${emp.shortName.charAt(0)}
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-sm leading-tight">${emp.shortName}</h3>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Colaborador</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 space-y-1.5">
+                            <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Folgas Confirmadas:</div>
+                            ${datesList}
+                        </div>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-100 text-right">
+                        <span class="text-xs font-bold text-emerald-700">Total: ${offDates.length} dias</span>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function renderAllViews() {
+            renderCardsView();
+            renderMatrixView();
+            renderCalendarView();
+            renderTeamView();
+        }
+
+        // Initialize application on DOM load
+        document.addEventListener('DOMContentLoaded', () => {
+            initEmployeeSelect();
+            renderAllViews();
+            switchTab('cards');
+        });
+    </script>
+</body>
+</html>
