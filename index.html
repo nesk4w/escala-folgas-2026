@@ -1,35 +1,33 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="h-full bg-slate-50">
+<html lang="pt-BR" class="h-full bg-[#0A111E]">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escala Interativa de Folgas - Setembro & Outubro 2026</title>
+    <title>G4F - Escala Interativa de Folgas (Set/Out 2026)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
                     },
                     colors: {
-                        emerald: {
-                            50: '#ecfdf5',
-                            100: '#d1fae5',
-                            200: '#a7f3d0',
-                            300: '#6ee7b7',
-                            400: '#34d399',
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857',
-                            800: '#065f46',
-                            900: '#064e3b',
+                        g4f: {
+                            navy: '#0A111E',
+                            card: '#111C2E',
+                            cardBorder: '#1E2D4A',
+                            gold: '#FFD700',
+                            goldHover: '#E6C200',
+                            goldLight: 'rgba(255, 215, 0, 0.12)',
+                            blue: '#1A2942',
+                            textMuted: '#94A3B8'
                         }
                     }
                 }
@@ -37,33 +35,39 @@
         }
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0A111E; color: #F1F5F9; }
         .custom-scrollbar::-webkit-scrollbar {
             height: 6px;
             width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f5f9;
+            background: #0A111E;
             border-radius: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
+            background: #1E2D4A;
             border-radius: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+            background: #FFD700;
+        }
+        .g4f-gradient {
+            background: linear-gradient(135deg, #0A111E 0%, #111C2E 50%, #16243D 100%);
+        }
+        .gold-glow {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.15);
         }
         @media print {
             .no-print { display: none !important; }
-            .print-full-width { width: 100% !important; max-width: none !important; }
+            body { background: #ffffff !important; color: #000000 !important; }
+            .bg-g4f-card, .bg-g4f-navy { background: #ffffff !important; color: #000000 !important; border-color: #ccc !important; }
         }
     </style>
 </head>
-<body class="h-full text-slate-800 flex flex-col antialiased">
+<body class="h-full text-slate-100 flex flex-col antialiased bg-[#0A111E]">
 
     <script>
-        // Global Data Structures
-        const EMPLOYEES = [
+        const DEFAULT_EMPLOYEES = [
             { id: 0, name: "ANTONIO DIOGO OLIVEIRA DA COSTA", shortName: "Antonio Diogo" },
             { id: 1, name: "THIAGO AROUCHE RABELO", shortName: "Thiago Arouche" },
             { id: 2, name: "DAVID ANDRIUS SOUZA CARNEIRO", shortName: "David Andrius" },
@@ -89,40 +93,121 @@
             { id: 11, date: "28/10/2026", dayName: "Quarta-feira", month: "outubro", year: 2026, iso: "2026-10-28", dayNum: 28 }
         ];
 
-        // Off Matrix: Matrix[empId][dateId] -> true if off
-        const OFF_MATRIX = [
-            [true,  false, false, true,  false, false, true,  false, false, true,  false, false], // 0: Antonio
-            [true,  false, false, true,  false, false, true,  false, false, true,  false, false], // 1: Thiago
-            [true,  false, false, true,  false, false, true,  false, false, true,  false, false], // 2: David
-            [false, true,  false, false, true,  false, false, true,  false, true,  false, false], // 3: Francisco
-            [false, true,  false, false, true,  false, false, true,  false, true,  false, false], // 4: Hamilton
-            [false, true,  false, true,  false, false, false, true,  false, false, true,  false], // 5: Pedro
-            [false, false, true,  true,  false, false, false, false, true,  false, true,  false], // 6: Tarciano
-            [false, false, true,  true,  false, false, false, false, true,  true,  false, false]  // 7: Wellington
+        const DEFAULT_OFF_MATRIX = [
+            [true,  false, false, true,  false, false, true,  false, false, true,  false, false],
+            [true,  false, false, true,  false, false, true,  false, false, true,  false, false],
+            [true,  false, false, true,  false, false, true,  false, false, true,  false, false],
+            [false, true,  false, false, true,  false, false, true,  false, true,  false, false],
+            [false, true,  false, false, true,  false, false, true,  false, true,  false, false],
+            [false, true,  false, true,  false, false, false, true,  false, false, true,  false],
+            [false, false, true,  true,  false, false, false, false, true,  false, true,  false],
+            [false, false, true,  true,  false, false, false, false, true,  true,  false, false]
         ];
 
-        // State variables
+        let EMPLOYEES = loadStorageData('G4F_ESCALA_EMPLOYEES', DEFAULT_EMPLOYEES);
+        let OFF_MATRIX = loadStorageData('G4F_ESCALA_OFF_MATRIX', DEFAULT_OFF_MATRIX);
+
         let currentTab = 'cards';
         let selectedEmployeeFilter = 'ALL';
         let searchQuery = '';
 
-        // Safe global function declaration to prevent ReferenceError
+        function loadStorageData(key, fallback) {
+            try {
+                const saved = localStorage.getItem(key);
+                return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(fallback));
+            } catch (e) {
+                return JSON.parse(JSON.stringify(fallback));
+            }
+        }
+
+        function saveStorageData() {
+            try {
+                localStorage.setItem('G4F_ESCALA_EMPLOYEES', JSON.stringify(EMPLOYEES));
+                localStorage.setItem('G4F_ESCALA_OFF_MATRIX', JSON.stringify(OFF_MATRIX));
+            } catch (e) {
+                console.error("Erro ao salvar dados localmente", e);
+            }
+        }
+
+        window.toggleOffStatus = function(empId, dateIdx) {
+            if (!OFF_MATRIX[empId]) return;
+            OFF_MATRIX[empId][dateIdx] = !OFF_MATRIX[empId][dateIdx];
+            saveStorageData();
+            renderAllViews();
+            updateStatsBadges();
+        };
+
+        window.resetToDefault = function() {
+            if (confirm("Deseja restaurar a escala para as configurações originais da G4F? Suas alterações manuais serão resetadas.")) {
+                EMPLOYEES = JSON.parse(JSON.stringify(DEFAULT_EMPLOYEES));
+                OFF_MATRIX = JSON.parse(JSON.stringify(DEFAULT_OFF_MATRIX));
+                saveStorageData();
+                initEmployeeSelect();
+                renderAllViews();
+                updateStatsBadges();
+            }
+        };
+
+        window.addNewEmployee = function() {
+            const name = prompt("Digite o nome completo do novo colaborador G4F:");
+            if (!name || !name.trim()) return;
+
+            const cleanName = name.trim().toUpperCase();
+            const nameParts = cleanName.split(' ');
+            const shortName = nameParts.length > 1 ? `${nameParts[0]} ${nameParts[1]}` : nameParts[0];
+
+            const newId = EMPLOYEES.length;
+            EMPLOYEES.push({ id: newId, name: cleanName, shortName: shortName });
+            OFF_MATRIX.push(new Array(SCHEDULE_DATES.length).fill(false));
+
+            saveStorageData();
+            initEmployeeSelect();
+            renderAllViews();
+            updateStatsBadges();
+        };
+
+        window.downloadUpdatedHtml = function() {
+            const htmlContent = document.documentElement.outerHTML;
+            let updatedHtml = htmlContent
+                .replace(/const DEFAULT_EMPLOYEES = \[[\s\S]*?\];/, `const DEFAULT_EMPLOYEES = ${JSON.stringify(EMPLOYEES, null, 12)};`)
+                .replace(/const DEFAULT_OFF_MATRIX = \[[\s\S]*?\];/, `const DEFAULT_OFF_MATRIX = ${JSON.stringify(OFF_MATRIX, null, 12)};`);
+
+            const blob = new Blob([updatedHtml], { type: 'text/html;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        };
+
+        function updateStatsBadges() {
+            const empBadge = document.getElementById('stat-emp-count');
+            const totalBadge = document.getElementById('stat-total-offs');
+            if (empBadge) empBadge.innerText = `${EMPLOYEES.length} Colaboradores`;
+
+            let count = 0;
+            OFF_MATRIX.forEach(row => {
+                row.forEach(isOff => { if (isOff) count++; });
+            });
+            if (totalBadge) totalBadge.innerText = `${count} Folgas Agendadas`;
+        }
+
         window.switchTab = function(tabName) {
             currentTab = tabName;
-            
-            // Update tab button styles
             const tabs = ['cards', 'matrix', 'calendar', 'team'];
             tabs.forEach(t => {
                 const btn = document.getElementById(`tab-${t}`);
                 if (!btn) return;
                 if (t === tabName) {
-                    btn.className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all bg-emerald-600 text-white shadow-sm";
+                    btn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all bg-[#FFD700] text-[#0A111E] shadow-lg shadow-amber-500/10";
                 } else {
-                    btn.className = "px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all text-slate-600 hover:bg-slate-100 hover:text-slate-900";
+                    btn.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2 transition-all text-slate-400 hover:text-white hover:bg-[#111C2E]";
                 }
             });
 
-            // Toggle view visibility
             tabs.forEach(t => {
                 const view = document.getElementById(`view-${t}`);
                 if (!view) return;
@@ -144,86 +229,100 @@
             renderAllViews();
         };
 
-        window.clearFilters = function() {
-            selectedEmployeeFilter = 'ALL';
-            searchQuery = '';
-            document.getElementById('search-input').value = '';
-            document.getElementById('employee-select').value = 'ALL';
-            renderAllViews();
-        };
+        function renderAllViews() {
+            renderCardsView();
+            renderMatrixView();
+            renderCalendarView();
+            renderTeamView();
+        }
     </script>
 
-    <header class="bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-900 text-white shadow-md sticky top-0 z-30 no-print">
+    <header class="bg-[#0A111E] border-b border-[#1E2D4A] sticky top-0 z-30 no-print">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div class="flex items-center space-x-3">
-                    <div class="p-2.5 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-                        <i class="fa-solid fa-calendar-check text-2xl text-emerald-300"></i>
+                
+                <!-- Header Branding -->
+                <div class="flex items-center space-x-3.5">
+                    <div class="w-11 h-11 bg-[#111C2E] rounded-2xl border border-[#1E2D4A] flex items-center justify-center text-[#FFD700] shadow-md">
+                        <i class="fa-solid fa-calendar-days text-xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl sm:text-2xl font-bold tracking-tight">Escala Interativa de Folgas</h1>
-                        <p class="text-xs sm:text-sm text-emerald-200/90 font-medium">Setembro & Outubro de 2026</p>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white">ESCALA DE FOLGAS</h1>
+                            <span class="bg-[#FFD700]/10 text-[#FFD700] text-[10px] font-extrabold px-2 py-0.5 rounded border border-[#FFD700]/30 uppercase">
+                                2026
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-400 font-medium">Controle de Folgas | Setembro & Outubro</p>
                     </div>
                 </div>
 
-                <!-- Global Stats Badges -->
-                <div class="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
-                    <div class="bg-white/10 backdrop-blur px-3 py-1.5 rounded-lg border border-white/10 text-center">
-                        <span class="block text-emerald-200 text-[10px] uppercase tracking-wider font-semibold">Equipe</span>
-                        <span class="font-bold text-sm sm:text-base">8 Pessoas</span>
+                <!-- Header Actions & Quick Export -->
+                <div class="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+                    <div class="bg-[#111C2E] px-3 py-1.5 rounded-xl border border-[#1E2D4A] text-center">
+                        <span class="block text-slate-400 text-[10px] uppercase font-bold tracking-wider">Equipe</span>
+                        <span id="stat-emp-count" class="font-extrabold text-white text-xs sm:text-sm">8 Colaboradores</span>
                     </div>
-                    <div class="bg-white/10 backdrop-blur px-3 py-1.5 rounded-lg border border-white/10 text-center">
-                        <span class="block text-emerald-200 text-[10px] uppercase tracking-wider font-semibold">Dias Escala</span>
-                        <span class="font-bold text-sm sm:text-base">12 Dias</span>
+                    <div class="bg-[#111C2E] px-3 py-1.5 rounded-xl border border-[#1E2D4A] text-center">
+                        <span class="block text-slate-400 text-[10px] uppercase font-bold tracking-wider">Total Folgas</span>
+                        <span id="stat-total-offs" class="font-extrabold text-[#FFD700] text-xs sm:text-sm">32 Folgas</span>
                     </div>
-                    <div class="bg-white/10 backdrop-blur px-3 py-1.5 rounded-lg border border-white/10 text-center">
-                        <span class="block text-emerald-200 text-[10px] uppercase tracking-wider font-semibold">Total Folgas</span>
-                        <span class="font-bold text-sm sm:text-base text-emerald-300">32 Folgas</span>
-                    </div>
+
+                    <!-- Button download updated HTML -->
+                    <button onclick="downloadUpdatedHtml()" title="Baixar arquivo HTML atualizado da G4F" class="bg-[#FFD700] hover:bg-[#E6C200] text-[#0A111E] font-extrabold px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 transition-all shadow-lg gold-glow">
+                        <i class="fa-solid fa-cloud-arrow-down"></i>
+                        <span>Baixar HTML Atualizado</span>
+                    </button>
                 </div>
+
             </div>
         </div>
     </header>
 
-    <div class="bg-white border-b border-slate-200 shadow-sm sticky top-[73px] z-20 no-print">
+    <div class="bg-[#111C2E] border-b border-[#1E2D4A] sticky top-[73px] z-20 no-print">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                 
-                <!-- Navigation Tabs -->
-                <div class="flex items-center space-x-1 overflow-x-auto pb-1 lg:pb-0 custom-scrollbar">
-                    <button id="tab-cards" onclick="switchTab('cards')" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all bg-emerald-600 text-white shadow-sm">
-                        <i class="fa-solid fa-layer-group"></i> Cards Diários
+                <!-- View Tabs -->
+                <div class="flex items-center space-x-1.5 overflow-x-auto pb-1 lg:pb-0 custom-scrollbar">
+                    <button id="tab-cards" onclick="switchTab('cards')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition-all bg-[#FFD700] text-[#0A111E]">
+                        <i class="fa-solid fa-border-all"></i> Cards Diários
                     </button>
-                    <button id="tab-matrix" onclick="switchTab('matrix')" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all text-slate-600 hover:bg-slate-100">
-                        <i class="fa-solid fa-table-cells"></i> Matriz Tabela
+                    <button id="tab-matrix" onclick="switchTab('matrix')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2 transition-all text-slate-400 hover:text-white hover:bg-[#1A2942]">
+                        <i class="fa-solid fa-table"></i> Matriz Tabela
                     </button>
-                    <button id="tab-calendar" onclick="switchTab('calendar')" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all text-slate-600 hover:bg-slate-100">
-                        <i class="fa-regular fa-calendar-days"></i> Visão Mensal
+                    <button id="tab-calendar" onclick="switchTab('calendar')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2 transition-all text-slate-400 hover:text-white hover:bg-[#1A2942]">
+                        <i class="fa-regular fa-calendar-alt"></i> Visão Mensal
                     </button>
-                    <button id="tab-team" onclick="switchTab('team')" class="px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all text-slate-600 hover:bg-slate-100">
-                        <i class="fa-solid fa-users"></i> Por Colaborador
+                    <button id="tab-team" onclick="switchTab('team')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-2 transition-all text-slate-400 hover:text-white hover:bg-[#1A2942]">
+                        <i class="fa-solid fa-user-group"></i> Por Colaborador
                     </button>
                 </div>
 
-                <!-- Filter Controls -->
+                <!-- Global Filters & Actions -->
                 <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="addNewEmployee()" title="Adicionar Colaborador G4F" class="px-3 py-1.5 text-xs font-bold bg-[#1A2942] hover:bg-[#233554] text-[#FFD700] rounded-xl border border-[#FFD700]/20 flex items-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-user-plus text-[11px]"></i>
+                        <span class="hidden sm:inline">+ Colaborador</span>
+                    </button>
+
                     <!-- Search Input -->
-                    <div class="relative flex-1 sm:w-64">
+                    <div class="relative flex-1 sm:w-52">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                        <input id="search-input" type="text" oninput="updateSearch(this.value)" placeholder="Buscar colaborador..." class="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all">
+                        <input id="search-input" type="text" oninput="updateSearch(this.value)" placeholder="Buscar colaborador..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-[#0A111E] border border-[#1E2D4A] text-white placeholder-slate-500 rounded-xl focus:outline-none focus:border-[#FFD700] transition-all">
                     </div>
 
-                    <!-- Employee Select Dropdown -->
-                    <select id="employee-select" onchange="filterByEmployee(this.value)" class="py-1.5 px-3 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium">
+                    <!-- Dropdown Employee -->
+                    <select id="employee-select" onchange="filterByEmployee(this.value)" class="py-1.5 px-3 text-xs bg-[#0A111E] border border-[#1E2D4A] text-slate-200 rounded-xl focus:outline-none focus:border-[#FFD700] font-medium transition-all">
                         <option value="ALL">Todos os Colaboradores</option>
                     </select>
 
-                    <!-- Reset & Print Buttons -->
-                    <button onclick="clearFilters()" title="Limpar Filtros" class="p-2 text-slate-500 hover:text-emerald-700 hover:bg-slate-100 rounded-lg transition-all text-xs border border-slate-200">
-                        <i class="fa-solid fa-rotate-left"></i>
+                    <button onclick="resetToDefault()" title="Restaurar padrão da escala" class="p-2 text-rose-400 hover:bg-rose-500/10 rounded-xl border border-rose-500/20 transition-all text-xs">
+                        <i class="fa-solid fa-arrow-rotate-left"></i>
                     </button>
-                    <button onclick="window.print()" title="Imprimir / Salvar PDF" class="px-3 py-1.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg border border-slate-300 flex items-center gap-1.5 transition-all">
-                        <i class="fa-solid fa-print"></i> <span class="hidden sm:inline">Imprimir</span>
+                    <button onclick="window.print()" title="Imprimir Relatório" class="px-3 py-1.5 text-xs font-semibold bg-[#1A2942] hover:bg-[#233554] text-slate-200 rounded-xl border border-[#1E2D4A] flex items-center gap-1.5 transition-all">
+                        <i class="fa-solid fa-print"></i>
+                        <span class="hidden sm:inline">Imprimir</span>
                     </button>
                 </div>
 
@@ -233,36 +332,37 @@
 
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-        <!-- VIEW 1: CARDS VIEW (Daily Timeline Cards) -->
+        <!-- VIEW 1: CARDS VIEW -->
         <section id="view-cards" class="space-y-6">
-            <div class="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+            <div class="flex items-center justify-between bg-[#111C2E] border border-[#1E2D4A] rounded-2xl p-4">
                 <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-circle-info text-emerald-600 text-lg"></i>
-                    <p class="text-xs sm:text-sm text-emerald-900 font-medium">
-                        Exibindo os dias de escala com a lista de colaboradores em folga programada.
+                    <div class="w-8 h-8 rounded-xl bg-[#FFD700]/10 border border-[#FFD700]/20 flex items-center justify-center text-[#FFD700]">
+                        <i class="fa-solid fa-info text-xs"></i>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-300 font-medium">
+                        Clique no botão <span class="text-[#FFD700] font-bold">"Editar"</span> de qualquer dia para alterar instantaneamente as folgas dos colaboradores G4F.
                     </p>
                 </div>
             </div>
 
-            <!-- Grid of Cards -->
-            <div id="cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                <!-- JS will inject dynamic cards here -->
-            </div>
+            <!-- Cards Grid -->
+            <div id="cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
         </section>
 
+        <!-- VIEW 2: MATRIX TABLE VIEW -->
         <section id="view-matrix" class="hidden space-y-4">
-            <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-                <div class="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between flex-wrap gap-2">
+            <div class="bg-[#111C2E] border border-[#1E2D4A] rounded-2xl shadow-xl overflow-hidden">
+                <div class="p-4 border-b border-[#1E2D4A] bg-[#0A111E]/50 flex items-center justify-between flex-wrap gap-2">
                     <div>
-                        <h2 class="font-bold text-slate-800 text-sm sm:text-base">Matriz Geral de Folgas</h2>
-                        <p class="text-xs text-slate-500">Visualização completa no formato de planilha</p>
+                        <h2 class="font-bold text-white text-sm sm:text-base">Matriz de Escala G4F</h2>
+                        <p class="text-xs text-slate-400">Clique diretamente em qualquer célula para alternar entre Folga (X) e Trabalho</p>
                     </div>
                     <div class="flex items-center gap-3 text-xs">
-                        <span class="inline-flex items-center gap-1 text-emerald-700 font-semibold bg-emerald-100 px-2.5 py-1 rounded-md border border-emerald-200">
-                            <i class="fa-solid fa-check"></i> X = Folga
+                        <span class="inline-flex items-center gap-1.5 text-[#FFD700] font-bold bg-[#FFD700]/10 px-3 py-1 rounded-lg border border-[#FFD700]/30">
+                            <i class="fa-solid fa-xmark"></i> X = Folga
                         </span>
-                        <span class="inline-flex items-center gap-1 text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md border border-slate-200">
-                            Vazio = Trabalho
+                        <span class="inline-flex items-center gap-1.5 text-slate-400 bg-[#0A111E] px-3 py-1 rounded-lg border border-[#1E2D4A]">
+                            Vazio = Em Trabalho
                         </span>
                     </div>
                 </div>
@@ -270,302 +370,221 @@
                 <div class="overflow-x-auto custom-scrollbar">
                     <table class="w-full text-left border-collapse text-xs sm:text-sm">
                         <thead>
-                            <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
-                                <th class="p-3 font-semibold min-w-[220px] sticky left-0 bg-slate-100 z-10 border-r border-slate-200">
-                                    Nome do Colaborador
+                            <tr class="bg-[#0A111E] text-slate-300 border-b border-[#1E2D4A]">
+                                <th class="p-3.5 font-bold min-w-[220px] sticky left-0 bg-[#0A111E] z-10 border-r border-[#1E2D4A]">
+                                    Colaborador
                                 </th>
-                                <!-- Dynamic Date Headers inserted by JS -->
                                 <th id="matrix-date-headers-placeholder"></th>
-                                <th class="p-3 font-semibold text-center bg-slate-200/60 min-w-[80px]">Total</th>
+                                <th class="p-3.5 font-bold text-center bg-[#1A2942] min-w-[80px] text-[#FFD700]">Total</th>
                             </tr>
                         </thead>
-                        <tbody id="matrix-tbody" class="divide-y divide-slate-200 bg-white">
-                            <!-- Dynamic Matrix Rows inserted by JS -->
-                        </tbody>
-                        <tfoot id="matrix-tfoot" class="bg-slate-100 border-t-2 border-slate-300 font-semibold">
-                            <!-- Dynamic Matrix Column Totals -->
-                        </tfoot>
+                        <tbody id="matrix-tbody" class="divide-y divide-[#1E2D4A] bg-[#111C2E]"></tbody>
+                        <tfoot id="matrix-tfoot" class="bg-[#0A111E] border-t-2 border-[#1E2D4A] font-bold"></tfoot>
                     </table>
                 </div>
             </div>
         </section>
 
+        <!-- VIEW 3: MONTHLY CALENDAR VIEW -->
         <section id="view-calendar" class="hidden space-y-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 
-                <!-- September 2026 Calendar -->
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                <!-- September 2026 -->
+                <div class="bg-[#111C2E] rounded-2xl border border-[#1E2D4A] p-5 space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-[#1E2D4A]">
                         <div class="flex items-center gap-2">
-                            <i class="fa-regular fa-calendar text-emerald-600 text-lg"></i>
-                            <h2 class="font-bold text-lg text-slate-800">Setembro 2026</h2>
+                            <i class="fa-solid fa-calendar-days text-[#FFD700]"></i>
+                            <h2 class="font-extrabold text-base sm:text-lg text-white">Setembro 2026</h2>
                         </div>
-                        <span class="text-xs font-semibold px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full">
-                            3 Dias com Folgas
+                        <span class="text-xs font-bold px-2.5 py-1 bg-[#FFD700]/10 text-[#FFD700] border border-[#FFD700]/30 rounded-full">
+                            3 Dias com Folga
                         </span>
                     </div>
-
-                    <!-- Calendar Grid Header -->
-                    <div class="grid grid-cols-7 gap-1 text-center font-semibold text-slate-500 text-xs py-1">
+                    <div class="grid grid-cols-7 gap-1 text-center font-bold text-slate-400 text-xs py-1">
                         <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
                     </div>
-
-                    <!-- Calendar Days Grid -->
-                    <div id="september-calendar-grid" class="grid grid-cols-7 gap-1 text-xs">
-                        <!-- JS renders calendar cells -->
-                    </div>
+                    <div id="september-calendar-grid" class="grid grid-cols-7 gap-1.5 text-xs"></div>
                 </div>
 
-                <!-- October 2026 Calendar -->
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                <!-- October 2026 -->
+                <div class="bg-[#111C2E] rounded-2xl border border-[#1E2D4A] p-5 space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-[#1E2D4A]">
                         <div class="flex items-center gap-2">
-                            <i class="fa-regular fa-calendar text-emerald-600 text-lg"></i>
-                            <h2 class="font-bold text-lg text-slate-800">Outubro 2026</h2>
+                            <i class="fa-solid fa-calendar-days text-[#FFD700]"></i>
+                            <h2 class="font-extrabold text-base sm:text-lg text-white">Outubro 2026</h2>
                         </div>
-                        <span class="text-xs font-semibold px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full">
-                            9 Dias com Folgas
+                        <span class="text-xs font-bold px-2.5 py-1 bg-[#FFD700]/10 text-[#FFD700] border border-[#FFD700]/30 rounded-full">
+                            9 Dias com Folga
                         </span>
                     </div>
-
-                    <!-- Calendar Grid Header -->
-                    <div class="grid grid-cols-7 gap-1 text-center font-semibold text-slate-500 text-xs py-1">
+                    <div class="grid grid-cols-7 gap-1 text-center font-bold text-slate-400 text-xs py-1">
                         <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
                     </div>
-
-                    <!-- Calendar Days Grid -->
-                    <div id="october-calendar-grid" class="grid grid-cols-7 gap-1 text-xs">
-                        <!-- JS renders calendar cells -->
-                    </div>
+                    <div id="october-calendar-grid" class="grid grid-cols-7 gap-1.5 text-xs"></div>
                 </div>
 
             </div>
         </section>
 
+        <!-- VIEW 4: TEAM VIEW -->
         <section id="view-team" class="hidden space-y-6">
-            <div id="team-cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- Dynamic Employee Cards inserted by JS -->
-            </div>
+            <div id="team-cards-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
         </section>
 
     </main>
 
-    <div id="day-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
-            <div class="bg-emerald-700 text-white p-4 flex items-center justify-between">
-                <div>
-                    <h3 id="modal-date-title" class="font-bold text-lg">Data</h3>
-                    <p id="modal-date-subtitle" class="text-xs text-emerald-100 font-medium">Dia da semana</p>
+    <!-- Modal for Editing Off-Days -->
+    <div id="day-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-[#111C2E] border border-[#1E2D4A] rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div class="bg-[#0A111E] p-4 border-b border-[#1E2D4A] flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl bg-[#FFD700] text-[#0A111E] flex items-center justify-center font-bold text-xs">
+                        <i class="fa-solid fa-pen"></i>
+                    </div>
+                    <div>
+                        <h3 id="modal-date-title" class="font-extrabold text-white text-base">Data</h3>
+                        <p id="modal-date-subtitle" class="text-xs text-slate-400 font-medium">Dia da semana</p>
+                    </div>
                 </div>
-                <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all">
+                <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-[#1A2942] hover:bg-[#233554] flex items-center justify-center text-slate-300 transition-all">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <div class="p-5 space-y-4">
-                <div class="text-xs font-semibold uppercase text-slate-400 tracking-wider">
-                    Colaboradores de Folga neste dia:
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Marque quem estará de folga:</span>
+                    <span class="text-[10px] font-extrabold text-[#FFD700] bg-[#FFD700]/10 px-2 py-0.5 rounded border border-[#FFD700]/30">
+                        G4F Scaler
+                    </span>
                 </div>
-                <div id="modal-employee-list" class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
-                    <!-- Dynamic list -->
-                </div>
+                <div id="modal-employee-list" class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-1"></div>
             </div>
-            <div class="bg-slate-50 p-4 border-t border-slate-200 text-right">
-                <button onclick="closeModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-lg text-xs transition-all">
-                    Fechar
+            <div class="bg-[#0A111E] p-4 border-t border-[#1E2D4A] flex items-center justify-between">
+                <span class="text-[11px] text-slate-500">Salvo automaticamente</span>
+                <button onclick="closeModal()" class="px-5 py-2 bg-[#FFD700] hover:bg-[#E6C200] text-[#0A111E] font-extrabold rounded-xl text-xs transition-all shadow-md">
+                    Concluir
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-        // Modal functions
-        window.openModal = function(dateIndex) {
-            const dateObj = SCHEDULE_DATES[dateIndex];
-            if (!dateObj) return;
-
-            document.getElementById('modal-date-title').innerText = dateObj.date;
-            document.getElementById('modal-date-subtitle').innerText = dateObj.dayName;
-
-            const modalList = document.getElementById('modal-employee-list');
-            modalList.innerHTML = '';
-
-            const offEmps = EMPLOYEES.filter(e => OFF_MATRIX[e.id][dateIndex]);
-
-            if (offEmps.length === 0) {
-                modalList.innerHTML = `
-                    <div class="p-4 bg-slate-100 text-slate-500 rounded-lg text-center text-xs font-medium">
-                        Nenhuma folga programada para este dia.
-                    </div>
-                `;
-            } else {
-                offEmps.forEach(emp => {
-                    const div = document.createElement('div');
-                    div.className = "flex items-center gap-3 p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-slate-800 text-xs sm:text-sm font-semibold";
-                    div.innerHTML = `
-                        <div class="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">
-                            ${emp.name.charAt(0)}
-                        </div>
-                        <span>${emp.name}</span>
-                    `;
-                    modalList.appendChild(div);
-                });
-            }
-
-            document.getElementById('day-modal').classList.remove('hidden');
-        };
-
-        window.closeModal = function() {
-            document.getElementById('day-modal').classList.add('hidden');
-        };
-
-        // Populate Select Dropdown
-        function initEmployeeSelect() {
-            const select = document.getElementById('employee-select');
-            select.innerHTML = '<option value="ALL">Todos os Colaboradores</option>';
-            EMPLOYEES.forEach(emp => {
-                const opt = document.createElement('option');
-                opt.value = emp.id;
-                opt.textContent = emp.shortName;
-                select.appendChild(opt);
-            });
-        }
-
-        // Render View 1: Cards View
         function renderCardsView() {
             const container = document.getElementById('cards-container');
+            if (!container) return;
             container.innerHTML = '';
 
             SCHEDULE_DATES.forEach((d, dateIdx) => {
-                // Filter logic
-                const offEmps = EMPLOYEES.filter(emp => OFF_MATRIX[emp.id][dateIdx]);
-                
-                // Check if matches filter/search
+                let offList = EMPLOYEES.filter(emp => OFF_MATRIX[emp.id] && OFF_MATRIX[emp.id][dateIdx]);
+
                 if (selectedEmployeeFilter !== 'ALL') {
-                    const isEmpOff = OFF_MATRIX[parseInt(selectedEmployeeFilter)][dateIdx];
-                    if (!isEmpOff) return;
+                    const empId = parseInt(selectedEmployeeFilter);
+                    offList = offList.filter(emp => emp.id === empId);
                 }
 
                 if (searchQuery) {
-                    const matchesSearch = offEmps.some(e => e.name.toLowerCase().includes(searchQuery) || e.shortName.toLowerCase().includes(searchQuery));
-                    if (!matchesSearch) return;
+                    offList = offList.filter(emp => emp.name.toLowerCase().includes(searchQuery) || emp.shortName.toLowerCase().includes(searchQuery));
                 }
 
                 const card = document.createElement('div');
-                card.className = "bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col";
-                
-                const hasOffs = offEmps.length > 0;
-                const headerBg = hasOffs ? 'bg-emerald-700 text-white' : 'bg-slate-100 text-slate-600';
+                card.className = "bg-[#111C2E] border border-[#1E2D4A] rounded-2xl p-4 space-y-3.5 flex flex-col justify-between hover:border-[#FFD700]/40 transition-all shadow-lg";
 
-                let empsHTML = '';
-                if (hasOffs) {
-                    empsHTML = offEmps.map(emp => {
-                        const isSelected = selectedEmployeeFilter !== 'ALL' && parseInt(selectedEmployeeFilter) === emp.id;
-                        return `
-                            <div class="flex items-center gap-2 p-2 rounded-lg text-xs font-semibold ${isSelected ? 'bg-emerald-100 text-emerald-900 border border-emerald-300' : 'bg-slate-50 text-slate-700 border border-slate-200'}">
-                                <span class="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">
-                                    ${emp.shortName.charAt(0)}
-                                </span>
-                                <span class="truncate">${emp.shortName}</span>
+                let listHtml = '';
+                if (offList.length > 0) {
+                    listHtml = offList.map(emp => `
+                        <div class="flex items-center gap-2.5 px-3 py-2 bg-[#0A111E] rounded-xl border border-[#1E2D4A]">
+                            <div class="w-6 h-6 rounded-full bg-[#FFD700] text-[#0A111E] flex items-center justify-center font-extrabold text-[10px]">
+                                ${emp.shortName.charAt(0)}
                             </div>
-                        `;
-                    }).join('');
+                            <span class="text-xs font-semibold text-slate-200 truncate">${emp.name}</span>
+                        </div>
+                    `).join('');
                 } else {
-                    empsHTML = `
-                        <div class="text-center py-6 text-slate-400 text-xs italic font-medium">
-                            (Sem folgas programadas)
+                    listHtml = `
+                        <div class="text-center py-6 text-xs text-slate-500 font-medium">
+                            <i class="fa-regular fa-calendar-xmark text-lg block mb-1 opacity-50"></i>
+                            Nenhuma folga nesta data
                         </div>
                     `;
                 }
 
                 card.innerHTML = `
-                    <div class="${headerBg} p-3.5 flex items-center justify-between border-b border-black/5">
-                        <div>
-                            <span class="text-xs opacity-80 uppercase tracking-wider font-semibold block">${d.dayName}</span>
-                            <span class="font-bold text-base sm:text-lg">${d.date}</span>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between border-b border-[#1E2D4A] pb-2.5">
+                            <div>
+                                <span class="text-[11px] font-bold text-[#FFD700] uppercase tracking-wider">${d.dayName}</span>
+                                <h3 class="text-base font-extrabold text-white">${d.date}</h3>
+                            </div>
+                            <span class="px-2.5 py-1 text-xs font-extrabold rounded-full ${offList.length > 0 ? 'bg-[#FFD700]/10 text-[#FFD700] border border-[#FFD700]/30' : 'bg-[#1A2942] text-slate-400'}">
+                                ${offList.length} Folga(s)
+                            </span>
                         </div>
-                        <span class="text-xs px-2.5 py-1 rounded-full font-bold ${hasOffs ? 'bg-emerald-500 text-white' : 'bg-slate-200 text-slate-600'}">
-                            ${offEmps.length} ${offEmps.length === 1 ? 'folga' : 'folgas'}
-                        </span>
+                        <div class="space-y-1.5 max-h-48 overflow-y-auto custom-scrollbar">
+                            ${listHtml}
+                        </div>
                     </div>
-                    <div class="p-3 flex-1 space-y-2">
-                        ${empsHTML}
-                    </div>
-                    <div class="p-2.5 bg-slate-50 border-t border-slate-100 text-center">
-                        <button onclick="openModal(${dateIdx})" class="text-xs font-semibold text-emerald-700 hover:text-emerald-900 transition-colors">
-                            Ver detalhes <i class="fa-solid fa-chevron-right text-[10px] ml-0.5"></i>
+                    <div class="pt-3 border-t border-[#1E2D4A] flex items-center justify-between">
+                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">${d.month} / ${d.year}</span>
+                        <button onclick="openModal(${dateIdx})" class="px-3 py-1.5 bg-[#1A2942] hover:bg-[#233554] border border-[#1E2D4A] hover:border-[#FFD700]/40 rounded-xl text-xs font-bold text-slate-200 hover:text-[#FFD700] transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-pen-to-square text-[10px]"></i> Editar
                         </button>
                     </div>
                 `;
-
                 container.appendChild(card);
             });
-
-            if (container.children.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full bg-white p-8 rounded-xl text-center text-slate-500 border border-slate-200">
-                        <i class="fa-solid fa-filter-circle-xmark text-3xl mb-2 text-slate-300"></i>
-                        <p class="font-semibold text-sm">Nenhuma folga encontrada para os filtros selecionados.</p>
-                        <button onclick="clearFilters()" class="mt-3 text-xs text-emerald-600 font-semibold hover:underline">Limpar Filtros</button>
-                    </div>
-                `;
-            }
         }
 
         function renderMatrixView() {
             const dateHeadersPlaceholder = document.getElementById('matrix-date-headers-placeholder');
             const tbody = document.getElementById('matrix-tbody');
             const tfoot = document.getElementById('matrix-tfoot');
+            if (!tbody || !tfoot) return;
 
-            // Generate Date Headers
-            let headersHTML = '';
-            SCHEDULE_DATES.forEach(d => {
-                headersHTML += `
-                    <th class="p-2.5 text-center font-semibold min-w-[90px] border-r border-slate-200 bg-slate-100">
-                        <div class="text-[11px] font-medium text-slate-500">${d.dayName.split('-')[0]}</div>
-                        <div class="text-xs font-bold text-slate-800">${d.date.substring(0, 5)}</div>
-                    </th>
-                `;
-            });
-            dateHeadersPlaceholder.outerHTML = headersHTML;
+            if (dateHeadersPlaceholder) {
+                let headersHTML = '';
+                SCHEDULE_DATES.forEach(d => {
+                    headersHTML += `
+                        <th class="p-2.5 text-center font-bold min-w-[90px] border-r border-[#1E2D4A] bg-[#0A111E]">
+                            <div class="text-[10px] font-semibold text-slate-400 uppercase">${d.dayName.substring(0, 3)}</div>
+                            <div class="text-xs font-extrabold text-white">${d.date.substring(0, 5)}</div>
+                        </th>
+                    `;
+                });
+                dateHeadersPlaceholder.outerHTML = headersHTML;
+            }
 
-            // Generate Employee Rows
             tbody.innerHTML = '';
             EMPLOYEES.forEach(emp => {
-                // Search filter
-                if (searchQuery && !emp.name.toLowerCase().includes(searchQuery) && !emp.shortName.toLowerCase().includes(searchQuery)) {
-                    return;
-                }
-                if (selectedEmployeeFilter !== 'ALL' && parseInt(selectedEmployeeFilter) !== emp.id) {
-                    return;
-                }
+                if (searchQuery && !emp.name.toLowerCase().includes(searchQuery) && !emp.shortName.toLowerCase().includes(searchQuery)) return;
+                if (selectedEmployeeFilter !== 'ALL' && parseInt(selectedEmployeeFilter) !== emp.id) return;
 
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50/80 transition-colors";
+                tr.className = "hover:bg-[#1A2942]/50 transition-colors";
 
                 let rowCount = 0;
                 let cellsHTML = `
-                    <td class="p-3 font-semibold text-slate-800 sticky left-0 bg-white border-r border-slate-200 shadow-sm">
+                    <td class="p-3 font-semibold text-slate-200 sticky left-0 bg-[#111C2E] border-r border-[#1E2D4A] z-10">
                         ${emp.name}
                     </td>
                 `;
 
                 SCHEDULE_DATES.forEach((d, dateIdx) => {
-                    const isOff = OFF_MATRIX[emp.id][dateIdx];
+                    const isOff = OFF_MATRIX[emp.id] && OFF_MATRIX[emp.id][dateIdx];
                     if (isOff) rowCount++;
 
                     cellsHTML += `
-                        <td class="p-2 text-center border-r border-slate-100 ${isOff ? 'bg-emerald-50' : ''}">
+                        <td onclick="toggleOffStatus(${emp.id}, ${dateIdx})" title="Clique para alternar folga" class="p-2 text-center border-r border-[#1E2D4A] cursor-pointer hover:bg-[#FFD700]/20 transition-all ${isOff ? 'bg-[#FFD700]/10' : ''}">
                             ${isOff ? `
-                                <span class="inline-flex items-center justify-center w-6 h-6 rounded bg-emerald-600 text-white font-bold text-xs shadow-sm">
+                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-[#FFD700] text-[#0A111E] font-extrabold text-xs shadow-md">
                                     X
                                 </span>
-                            ` : '<span class="text-slate-300 text-xs">-</span>'}
+                            ` : '<span class="text-slate-600 text-xs hover:text-[#FFD700] font-bold">+</span>'}
                         </td>
                     `;
                 });
 
                 cellsHTML += `
-                    <td class="p-3 text-center font-bold text-emerald-800 bg-emerald-50/50">
+                    <td class="p-3 text-center font-extrabold text-[#FFD700] bg-[#1A2942]/40">
                         ${rowCount}
                     </td>
                 `;
@@ -574,10 +593,9 @@
                 tbody.appendChild(tr);
             });
 
-            // Column Totals in Footer
             let footerHTML = `
                 <tr>
-                    <td class="p-3 sticky left-0 bg-slate-100 border-r border-slate-200 font-bold text-slate-700">
+                    <td class="p-3 sticky left-0 bg-[#0A111E] border-r border-[#1E2D4A] font-bold text-slate-300">
                         Total de Folgas
                     </td>
             `;
@@ -586,19 +604,19 @@
             SCHEDULE_DATES.forEach((d, dateIdx) => {
                 let colTotal = 0;
                 EMPLOYEES.forEach(emp => {
-                    if (OFF_MATRIX[emp.id][dateIdx]) colTotal++;
+                    if (OFF_MATRIX[emp.id] && OFF_MATRIX[emp.id][dateIdx]) colTotal++;
                 });
                 grandTotal += colTotal;
 
                 footerHTML += `
-                    <td class="p-2.5 text-center border-r border-slate-200 font-bold text-emerald-800">
+                    <td class="p-2.5 text-center border-r border-[#1E2D4A] font-extrabold text-[#FFD700]">
                         ${colTotal}
                     </td>
                 `;
             });
 
             footerHTML += `
-                <td class="p-3 text-center font-extrabold text-emerald-900 bg-emerald-200/60">
+                <td class="p-3 text-center font-extrabold text-[#0A111E] bg-[#FFD700]">
                     ${grandTotal}
                 </td>
             </tr>
@@ -608,120 +626,102 @@
         }
 
         function renderCalendarView() {
-            // September 2026 Grid (Starts on Tuesday = index 2)
-            const septGrid = document.getElementById('september-calendar-grid');
-            septGrid.innerHTML = '';
-
-            // Blank padding for Sun, Mon
-            septGrid.appendChild(createBlankCell());
-            septGrid.appendChild(createBlankCell());
-
-            for (let day = 1; day <= 30; day++) {
-                const dateStr = `${day < 10 ? '0' + day : day}/09/2026`;
-                const dateIdx = SCHEDULE_DATES.findIndex(d => d.date === dateStr);
-                septGrid.appendChild(createCalendarCell(day, dateIdx));
-            }
-
-            // October 2026 Grid (Starts on Thursday = index 4)
-            const octGrid = document.getElementById('october-calendar-grid');
-            octGrid.innerHTML = '';
-
-            octGrid.appendChild(createBlankCell());
-            octGrid.appendChild(createBlankCell());
-            octGrid.appendChild(createBlankCell());
-            octGrid.appendChild(createBlankCell());
-
-            for (let day = 1; day <= 31; day++) {
-                const dateStr = `${day < 10 ? '0' + day : day}/10/2026`;
-                const dateIdx = SCHEDULE_DATES.findIndex(d => d.date === dateStr);
-                octGrid.appendChild(createCalendarCell(day, dateIdx));
-            }
+            renderMonthGrid('september-calendar-grid', 2026, 8, 30, 2);
+            renderMonthGrid('october-calendar-grid', 2026, 9, 31, 4);
         }
 
-        function createBlankCell() {
-            const div = document.createElement('div');
-            div.className = "h-16 bg-slate-50/50 rounded-lg border border-slate-100";
-            return div;
-        }
+        function renderMonthGrid(gridId, year, monthIdx, totalDays, startDayOfWeek) {
+            const grid = document.getElementById(gridId);
+            if (!grid) return;
+            grid.innerHTML = '';
 
-        function createCalendarCell(day, dateIdx) {
-            const cell = document.createElement('div');
-            const hasSchedule = dateIdx !== -1;
-
-            if (!hasSchedule) {
-                cell.className = "h-16 p-1.5 bg-white rounded-lg border border-slate-100 flex flex-col justify-between text-slate-400";
-                cell.innerHTML = `<span class="font-medium text-xs">${day}</span>`;
-            } else {
-                const offEmps = EMPLOYEES.filter(e => OFF_MATRIX[e.id][dateIdx]);
-                const count = offEmps.length;
-
-                cell.className = "h-16 p-1.5 bg-emerald-50 rounded-lg border-2 border-emerald-400 flex flex-col justify-between cursor-pointer hover:bg-emerald-100 transition-all shadow-sm";
-                cell.onclick = () => openModal(dateIdx);
-
-                cell.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <span class="font-bold text-xs text-emerald-900">${day}</span>
-                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    </div>
-                    <div class="text-[10px] font-bold text-emerald-800 bg-emerald-200/70 px-1.5 py-0.5 rounded text-center truncate">
-                        ${count} ${count === 1 ? 'folga' : 'folgas'}
-                    </div>
-                `;
+            for (let i = 0; i < startDayOfWeek; i++) {
+                const empty = document.createElement('div');
+                empty.className = "h-14 bg-[#0A111E]/40 rounded-xl border border-[#1E2D4A]/50";
+                grid.appendChild(empty);
             }
 
-            return cell;
+            for (let day = 1; day <= totalDays; day++) {
+                const dayStr = String(day).padStart(2, '0');
+                const monthStr = String(monthIdx + 1).padStart(2, '0');
+                const dateFormatted = `${dayStr}/${monthStr}/${year}`;
+
+                const scheduleIdx = SCHEDULE_DATES.findIndex(d => d.date === dateFormatted);
+                const cell = document.createElement('div');
+
+                if (scheduleIdx !== -1) {
+                    const offEmps = EMPLOYEES.filter(emp => OFF_MATRIX[emp.id] && OFF_MATRIX[emp.id][scheduleIdx]);
+                    cell.onclick = () => openModal(scheduleIdx);
+                    cell.className = "h-14 bg-[#FFD700]/10 hover:bg-[#FFD700]/20 border border-[#FFD700]/40 rounded-xl p-1.5 flex flex-col justify-between cursor-pointer transition-all shadow-xs";
+                    cell.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="font-extrabold text-xs text-[#FFD700]">${day}</span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#FFD700]"></span>
+                        </div>
+                        <div class="text-[9px] font-extrabold text-[#0A111E] bg-[#FFD700] rounded px-1 text-center truncate">
+                            ${offEmps.length} Folga(s)
+                        </div>
+                    `;
+                } else {
+                    cell.className = "h-14 bg-[#0A111E] border border-[#1E2D4A] rounded-xl p-1.5 text-slate-500";
+                    cell.innerHTML = `<span class="font-semibold text-xs text-slate-500">${day}</span>`;
+                }
+                grid.appendChild(cell);
+            }
         }
 
         function renderTeamView() {
             const container = document.getElementById('team-cards-container');
+            if (!container) return;
             container.innerHTML = '';
 
             EMPLOYEES.forEach(emp => {
-                if (searchQuery && !emp.name.toLowerCase().includes(searchQuery) && !emp.shortName.toLowerCase().includes(searchQuery)) {
-                    return;
-                }
-                if (selectedEmployeeFilter !== 'ALL' && parseInt(selectedEmployeeFilter) !== emp.id) {
-                    return;
-                }
+                if (searchQuery && !emp.name.toLowerCase().includes(searchQuery) && !emp.shortName.toLowerCase().includes(searchQuery)) return;
+                if (selectedEmployeeFilter !== 'ALL' && parseInt(selectedEmployeeFilter) !== emp.id) return;
 
-                // Get dates off
                 const offDates = [];
-                SCHEDULE_DATES.forEach((d, dateIdx) => {
-                    if (OFF_MATRIX[emp.id][dateIdx]) {
+                SCHEDULE_DATES.forEach((d, idx) => {
+                    if (OFF_MATRIX[emp.id] && OFF_MATRIX[emp.id][idx]) {
                         offDates.push(d);
                     }
                 });
 
                 const card = document.createElement('div');
-                card.className = "bg-white border border-slate-200 rounded-xl p-4 shadow-sm space-y-3 flex flex-col justify-between hover:border-emerald-400 transition-all";
+                card.className = "bg-[#111C2E] rounded-2xl border border-[#1E2D4A] p-4 space-y-3.5 flex flex-col justify-between hover:border-[#FFD700]/40 transition-all shadow-lg";
 
-                const datesList = offDates.map(d => `
-                    <div class="flex items-center justify-between p-2 bg-emerald-50 border border-emerald-200 rounded-lg text-xs font-semibold text-emerald-900">
-                        <span>${d.date}</span>
-                        <span class="text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded font-bold">${d.dayName.split('-')[0]}</span>
-                    </div>
-                `).join('');
+                const dateTags = offDates.length > 0 ? offDates.map(d => `
+                    <span class="inline-flex items-center gap-1 text-[11px] font-bold bg-[#FFD700]/10 text-[#FFD700] px-2.5 py-1 rounded-lg border border-[#FFD700]/20">
+                        <i class="fa-regular fa-calendar-check text-[9px]"></i> ${d.date.substring(0, 5)} (${d.dayName.substring(0, 3)})
+                    </span>
+                `).join('') : '<span class="text-xs text-slate-500">Nenhuma folga agendada</span>';
 
                 card.innerHTML = `
-                    <div>
-                        <div class="flex items-center gap-3 pb-3 border-b border-slate-200">
-                            <div class="w-10 h-10 rounded-full bg-emerald-700 text-white font-bold text-sm flex items-center justify-center shrink-0 shadow">
-                                ${emp.shortName.charAt(0)}
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-slate-800 text-sm leading-tight">${emp.shortName}</h3>
-                                <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Colaborador</p>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between border-b border-[#1E2D4A] pb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-[#FFD700] text-[#0A111E] flex items-center justify-center font-extrabold text-sm">
+                                    ${emp.shortName.charAt(0)}
+                                </div>
+                                <div>
+                                    <h4 class="font-extrabold text-xs sm:text-sm text-white leading-tight">${emp.name}</h4>
+                                    <span class="text-[11px] text-slate-400 font-medium">${emp.shortName}</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="mt-3 space-y-1.5">
-                            <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Folgas Confirmadas:</div>
-                            ${datesList}
+                        <div class="space-y-2">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Datas de Folga:</span>
+                            <div class="flex flex-wrap gap-1.5">
+                                ${dateTags}
+                            </div>
                         </div>
                     </div>
 
-                    <div class="pt-2 border-t border-slate-100 text-right">
-                        <span class="text-xs font-bold text-emerald-700">Total: ${offDates.length} dias</span>
+                    <div class="pt-3 border-t border-[#1E2D4A] flex items-center justify-between text-xs">
+                        <span class="text-slate-400 font-medium">Total acumulado:</span>
+                        <span class="font-extrabold text-[#0A111E] bg-[#FFD700] px-2.5 py-0.5 rounded-md">
+                            ${offDates.length} Folgas
+                        </span>
                     </div>
                 `;
 
@@ -729,17 +729,64 @@
             });
         }
 
-        function renderAllViews() {
-            renderCardsView();
-            renderMatrixView();
-            renderCalendarView();
-            renderTeamView();
+        let currentModalDateIdx = null;
+
+        window.openModal = function(dateIndex) {
+            currentModalDateIdx = dateIndex;
+            const dateObj = SCHEDULE_DATES[dateIndex];
+            if (!dateObj) return;
+
+            document.getElementById('modal-date-title').innerText = dateObj.date;
+            document.getElementById('modal-date-subtitle').innerText = dateObj.dayName;
+
+            renderModalCheckboxes();
+            document.getElementById('day-modal').classList.remove('hidden');
+        };
+
+        function renderModalCheckboxes() {
+            if (currentModalDateIdx === null) return;
+            const modalList = document.getElementById('modal-employee-list');
+            modalList.innerHTML = '';
+
+            EMPLOYEES.forEach(emp => {
+                const isOff = OFF_MATRIX[emp.id] && OFF_MATRIX[emp.id][currentModalDateIdx];
+                const label = document.createElement('label');
+                label.className = `flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all border ${isOff ? 'bg-[#FFD700]/10 border-[#FFD700]/50 text-white font-bold' : 'bg-[#0A111E] border-[#1E2D4A] text-slate-400 hover:bg-[#1A2942]'}`;
+                
+                label.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 rounded-lg ${isOff ? 'bg-[#FFD700] text-[#0A111E]' : 'bg-[#1A2942] text-slate-400'} flex items-center justify-center text-xs font-extrabold">
+                            ${emp.shortName.charAt(0)}
+                        </div>
+                        <span class="text-xs sm:text-sm">${emp.name}</span>
+                    </div>
+                    <input type="checkbox" ${isOff ? 'checked' : ''} onchange="toggleOffStatus(${emp.id}, ${currentModalDateIdx}); renderModalCheckboxes();" class="w-4 h-4 accent-[#FFD700] rounded border-[#1E2D4A]">
+                `;
+                modalList.appendChild(label);
+            });
         }
 
-        // Initialize application on DOM load
+        window.closeModal = function() {
+            document.getElementById('day-modal').classList.add('hidden');
+            currentModalDateIdx = null;
+        };
+
+        function initEmployeeSelect() {
+            const select = document.getElementById('employee-select');
+            if (!select) return;
+            select.innerHTML = '<option value="ALL">Todos os Colaboradores</option>';
+            EMPLOYEES.forEach(emp => {
+                const opt = document.createElement('option');
+                opt.value = emp.id;
+                opt.textContent = emp.shortName;
+                select.appendChild(opt);
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             initEmployeeSelect();
             renderAllViews();
+            updateStatsBadges();
             switchTab('cards');
         });
     </script>
